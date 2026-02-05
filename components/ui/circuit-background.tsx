@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from "react"
 
-import { motion } from "framer-motion"
+import { animate, motion } from "framer-motion"
 
 interface Position {
     x: number
     y: number
+}
+
+interface CircuitConnection {
+    target: number
+    animate: boolean
 }
 
 interface CircuitNode {
@@ -14,7 +19,7 @@ interface CircuitNode {
     x: number
     y: number
     hasChip: boolean
-    connections: number[]
+    connections: CircuitConnection[]
 }
 
 interface CircuitPath {
@@ -22,6 +27,7 @@ interface CircuitPath {
     start: Position
     end: Position
     midX: number
+    animate: boolean
     // length: number
 }
 
@@ -87,12 +93,18 @@ export default function CircuitBackground() {
                 .sort((a, b) => a.distance - b.distance)
 
             // Always take the 2 nearest
-            const connections = distances.slice(0, 2).map(n => n.index);
+            const connections = distances.slice(0, 2).map(n => ({
+                target: n.index,
+                animate: false
+            }));
 
             // Sometimes add the farthest
             if (Math.random() < farConnectionProbability) {
                 const farthest = distances[distances.length - 1];
-                connections.push(farthest.index);
+                connections.push({
+                    target: farthest.index,
+                    animate: true
+                });
             }
 
             node.connections = connections
@@ -103,9 +115,9 @@ export default function CircuitBackground() {
         let pathID = 0
 
         generatedNodes.forEach((node) => {
-            node.connections.forEach((targetIndex) => {
+            node.connections.forEach((connection) => {
 
-                const target = generatedNodes[targetIndex]
+                const target = generatedNodes[connection.target]
 
                 generatedPaths.push({
                     id: pathID++,
@@ -117,7 +129,8 @@ export default function CircuitBackground() {
                         x: target.x,
                         y: target.y
                     },
-                    midX: node.x + (target.x - node.x) * 0.5
+                    midX: node.x + (target.x - node.x) * 0.5,
+                    animate: connection.animate
                 })
 
             })
@@ -204,27 +217,30 @@ export default function CircuitBackground() {
                                     }}
                                 />
 
-                                <motion.path
-                                    key={`pulse-${path.id}`}
-                                    d={d}
-                                    fill="none"
-                                    stroke="url(#pathGradient)"
-                                    strokeWidth={aspect * 0.0015}
-                                    filter="url(#glow)"
-                                    strokeLinecap="round"
-                                    initial={{ pathLength: 0, pathOffset: 0 }}
-                                    animate={{
-                                        pathLength: [0, 0.3, 0],
-                                        pathOffset: [0, 0.7, 1],
-                                    }}
-                                    transition={{
-                                        duration: 3 + Math.random() * 2,
-                                        delay: path.id * 0.2,
-                                        repeat: Infinity,
-                                        repeatDelay: Math.random() * 5,
-                                        ease: "easeInOut",
-                                    }}
-                                />
+                                {path.animate && (
+                                    <motion.path
+                                        key={`pulse-${path.id}`}
+                                        d={d}
+                                        fill="none"
+                                        stroke="url(#pathGradient)"
+                                        strokeWidth={aspect * 0.0015}
+                                        filter="url(#glow)"
+                                        strokeLinecap="round"
+                                        initial={{ pathLength: 0, pathOffset: 0 }}
+                                        animate={{
+                                            pathLength: [0, 0.3, 0],
+                                            pathOffset: [0, 0.7, 1],
+                                        }}
+                                        transition={{
+                                            duration: 3 + Math.random() * 2,
+                                            delay: path.id * 0.2,
+                                            repeat: Infinity,
+                                            repeatDelay: Math.random() * 5,
+                                            ease: "easeInOut",
+                                        }}
+                                    />
+                                )}
+
                             </g>
                             
                         )
