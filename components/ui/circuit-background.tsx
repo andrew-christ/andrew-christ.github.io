@@ -19,7 +19,14 @@ export default function CircuitBackground() {
 
             {/* Add Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"/>
+            
+            <svg
+                className="absolute inset-0 h-full w-full"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="xMidYMid slice"
+            >
 
+            </svg>
         </div>
     )
 
