@@ -52,8 +52,8 @@ export default function CircuitBackground() {
 
         const padding = 5
 
-        const spacingX = (100 - 2 * padding) / cols
-        const spacingY = (100 - 2 * padding) / rows
+        const spacingX = (100) / (cols - 1)
+        const spacingY = (100) / (rows - 1)
 
         const noise = 15 
         const keepProbability = 0.75
@@ -65,8 +65,8 @@ export default function CircuitBackground() {
 
             return {
                 id: i,
-                x: padding + col * spacingX + (Math.random() - 0.5) * noise,
-                y: padding + row * spacingY + (Math.random() - 0.5) * noise,
+                x: (col) * spacingX + (Math.random() - 0.5) * noise,
+                y: (row) * spacingY + (Math.random() - 0.5) * noise,
                 hasChip: Math.random() < 0.45,
                 connections: [],
             }
@@ -74,19 +74,28 @@ export default function CircuitBackground() {
         .filter(() => Math.random() < keepProbability) // randomly delete some
         .map((node, newId) => ({ ...node, id: newId })) // reindex IDs after deletion
 
+        const farConnectionProbability = 0.15;
 
         // Connect nodes to nearby nodes
         generatedNodes.forEach((node, idx) => {
-            const nearbyNodes = generatedNodes
+            const distances = generatedNodes
                 .map((n, i) => ({
                     index: i,
                     distance: Math.sqrt(Math.pow(n.x - node.x, 2) + Math.pow(n.y - node.y, 2)) // Compute Euclidean Norm
                 }))
                 .filter((n) => n.index !== idx)
                 .sort((a, b) => a.distance - b.distance)
-                .slice(0, 2)
 
-            node.connections = nearbyNodes.map((n) => n.index)
+            // Always take the 2 nearest
+            const connections = distances.slice(0, 2).map(n => n.index);
+
+            // Sometimes add the farthest
+            if (Math.random() < farConnectionProbability) {
+                const farthest = distances[distances.length - 1];
+                connections.push(farthest.index);
+            }
+
+            node.connections = connections
         })
 
         // Generate circuit-like paths
@@ -164,7 +173,7 @@ export default function CircuitBackground() {
 
                 </defs>
 
-                {/* Add Static Circuit Paths */}
+                {/* Add Static Circuit Paths and Animate Pulse Path */}
                 {
                     paths.map((path) => {
 
@@ -177,22 +186,47 @@ export default function CircuitBackground() {
                             L ${path.end.x / 100 * size.w} ${path.end.y/ 100 * size.h}`
 
                         return (
-                            <motion.path
-                                key={`static-${path.id}`}
-                                d={d}
-                                fill="none"
-                                stroke="#0e7490"
-                                strokeWidth={aspect * 0.001}
-                                strokeOpacity="0.4"
-                                filter="url(#glow)"
-                                initial={{ pathLength: 0 }}
-                                animate={{ pathLength: 1 }}
-                                transition={{
-                                    duration: 2,
-                                    delay: path.id * 0.05,
-                                    ease: "easeInOut",
-                                }}
-                            />
+                            <g key={`path-${path.id}`}>
+                                <motion.path
+                                    key={`static-${path.id}`}
+                                    d={d}
+                                    fill="none"
+                                    stroke="#0e7490"
+                                    strokeWidth={aspect * 0.001}
+                                    strokeOpacity="0.4"
+                                    filter="url(#glow)"
+                                    initial={{ pathLength: 0 }}
+                                    animate={{ pathLength: 1 }}
+                                    transition={{
+                                        duration: 2,
+                                        delay: path.id * 0.05,
+                                        ease: "easeInOut",
+                                    }}
+                                />
+
+                                <motion.path
+                                    key={`pulse-${path.id}`}
+                                    d={d}
+                                    fill="none"
+                                    stroke="url(#pathGradient)"
+                                    strokeWidth={aspect * 0.0015}
+                                    filter="url(#glow)"
+                                    strokeLinecap="round"
+                                    initial={{ pathLength: 0, pathOffset: 0 }}
+                                    animate={{
+                                        pathLength: [0, 0.3, 0],
+                                        pathOffset: [0, 0.7, 1],
+                                    }}
+                                    transition={{
+                                        duration: 3 + Math.random() * 2,
+                                        delay: path.id * 0.2,
+                                        repeat: Infinity,
+                                        repeatDelay: Math.random() * 5,
+                                        ease: "easeInOut",
+                                    }}
+                                />
+                            </g>
+                            
                         )
                     })
                 }
@@ -289,6 +323,10 @@ export default function CircuitBackground() {
                 })}
 
             </svg>
+
+            {/* Vignette effect */}
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-slate-950 via-transparent to-slate-950 opacity-50" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-slate-950 via-transparent to-slate-950 opacity-50" />
 
         </div>
     )
