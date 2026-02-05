@@ -156,7 +156,7 @@ export default function CircuitBackground() {
                     </filter>
 
                     <filter id="nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
-                        <feGaussianBlur stdDeviation="5" result="coloredBlur" />
+                        <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
                         <feMerge>
                             <feMergeNode in="coloredBlur" />
                             <feMergeNode in="coloredBlur" />
@@ -251,17 +251,17 @@ export default function CircuitBackground() {
                                     stroke="#22d3ee"
                                     strokeWidth={aspect * 0.001}
                                     filter="url(#nodeGlow)"
-                                    initial={{ scale: 0, opacity: 0 }}
-                                    animate={{ 
-                                        scale: [1, 1.2, 1],
-                                        opacity: [0.5, 0.8, 0.5]
-                                    }}
-                                    transition={{
-                                        duration: 3,
-                                        delay: i * 0.1,
-                                        repeat: Infinity,
-                                        ease: "easeInOut",
-                                    }}
+                                    // initial={{ scale: 0, opacity: 0 }}
+                                    // animate={{ 
+                                    //     scale: [1, 1.2, 1],
+                                    //     opacity: [0.5, 0.8, 0.5]
+                                    // }}
+                                    // transition={{
+                                    //     duration: 3,
+                                    //     delay: i * 0.1,
+                                    //     repeat: Infinity,
+                                    //     ease: "easeInOut",
+                                    // }}
                                 />
 
                                 {/* Add Inner Dot */}
