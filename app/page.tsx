@@ -1,4 +1,5 @@
 import CircuitBackground from "@/components/ui/circuit-background";
+import LiquidGlassNavbar from "@/components/ui/liquid-glass-navbar";
 import Image from "next/image";
 
 export default function Home() {
@@ -6,8 +7,9 @@ export default function Home() {
     <main className="relative min-h-screen">
       
       <CircuitBackground />
+      <LiquidGlassNavbar />
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4">
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pt-24">
         <div className="relative">
           <h1 className="text-center text-5xl font-bold tracking-tight text-white md:text-7xl inline-block relative">
             Andrew{' '}

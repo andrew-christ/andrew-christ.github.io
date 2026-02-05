@@ -144,7 +144,6 @@ export default function CircuitBackground() {
 
     return (
         <div className="fixed inset-0 overflow-hidden">
-            <span>{}</span>
 
             {/* Add Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"/>
@@ -302,7 +301,7 @@ export default function CircuitBackground() {
                 }
 
                 {/* Additional decorative elements - small squares (like IC chips) */}
-                {
+                {/* {
                     nodes.map((node, index) => {
 
                         if (!node.hasChip) return null;
@@ -336,7 +335,7 @@ export default function CircuitBackground() {
                                 style={{ transformOrigin: `${node.x}px ${node.y}px` }}
                             />
                         )
-                })}
+                })} */}
 
             </svg>
 
