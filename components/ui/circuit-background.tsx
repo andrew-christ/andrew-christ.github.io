@@ -8,6 +8,7 @@ interface CircuitNode {
     id: number
     x: number
     y: number
+    hasChip: boolean
     connections: number[]
 }
 
@@ -36,7 +37,7 @@ export default function CircuitBackground() {
     // Generate random nodes whenever the page loads
     useEffect(() => {
 
-        const nodeCount = 40
+        const nodeCount = 20
 
         const cols = Math.ceil(Math.sqrt(nodeCount))
         const rows = Math.ceil(nodeCount / cols)
@@ -45,7 +46,7 @@ export default function CircuitBackground() {
         const spacingY = 100 / (rows + 1)
 
         const noise = 10 
-        const keepProbability = 0.6
+        const keepProbability = 0.75
 
         const generatedNodes: CircuitNode[] = Array.from({ length: nodeCount }, (_, i) => {
 
@@ -56,11 +57,14 @@ export default function CircuitBackground() {
                 id: i,
                 x: (col + 1) * spacingX + (Math.random() - 0.5) * noise,
                 y: (row + 1) * spacingY + (Math.random() - 0.5) * noise,
+                hasChip: Math.random() < 0.45,
                 connections: [],
             }
         })
         .filter(() => Math.random() < keepProbability) // randomly delete some
         .map((node, newId) => ({ ...node, id: newId })) // reindex IDs after deletion
+
+
 
 
 
@@ -161,7 +165,9 @@ export default function CircuitBackground() {
 
                 {/* Additional decorative elements - small squares (like IC chips) */}
                 {
-                    nodes.slice(0, 8).map((node, index) => {
+                    nodes.map((node, index) => {
+
+                        if (!node.hasChip) return null;
 
                         const aspect = Math.min(size.w, size.h)
 
